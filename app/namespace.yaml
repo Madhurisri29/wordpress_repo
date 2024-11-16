@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: wp
+  labels:
+    id: c0905643
+    app: wordpress
+    env: dev

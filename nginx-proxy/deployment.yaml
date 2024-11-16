@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-proxy
+  namespace: proxy
+  labels:
+    id: c0905643
+    app: nginx-proxy
+    env: dev
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      id: c0905643
+      app: nginx-proxy
+      env: dev
+  template:
+    metadata:
+      labels:
+        id: c0905643
+        app: nginx-proxy
+        env: dev
+    spec:
+      containers:
+      - name: nginx
+        image: gcr.io/hardy-messenger-434723-i9/nginx-proxy:latest
+        ports:
+        - containerPort: 80
+        volumeMounts:
+        - name: nginx-conf
+          mountPath: /etc/nginx/nginx.conf
+          subPath: nginx.conf
+      volumes:
+      - name: nginx-conf
+        configMap:
+          name: nginx-conf
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-proxy
+  namespace: proxy
+  labels:
+    id: c0905643
+    app: nginx-proxy
+    env: dev
+spec:
+  selector:
+    id: c0905643
+    app: nginx-proxy
+    env: dev
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8080
+  type: LoadBalancer
