@@ -3,17 +3,11 @@ kind: Deployment
 metadata:
   name: mariadb
   namespace: db
-  labels:
-    id: c0905643
-    app: mariadb
-    env: dev
 spec:
   replicas: 1
   selector:
     matchLabels:
-      id: c0905643
       app: mariadb
-      env: dev
   template:
     metadata:
       labels:
@@ -22,42 +16,27 @@ spec:
         env: dev
     spec:
       containers:
-      - name: mariadb
-        image: gcr.io/hardy-messenger-434723-i9/mariadb:latest
-        ports:
-        - containerPort: 3306
-        env:
-        - name: MYSQL_ROOT_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: mariadb-secret
-              key: root-password
-        - name: MYSQL_DATABASE
-          value: "wordpress"
-        - name: MYSQL_USER
-          value: "user"
-        - name: MYSQL_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: mariadb-secret
-              key: user-password
+        - name: mariadb
+          image: gcr.io/hardy-messenger-434723-i9/mariadb:latest
+          envFrom:
+            - configMapRef:
+                name: database-config
+            - secretRef:
+                name: database-secret
+          ports:
+            - containerPort: 3306
 ---
+# Database Service
 apiVersion: v1
 kind: Service
 metadata:
-  name: mariadb
+  name: database-service
   namespace: db
-  labels:
-    id: c0905643
-    app: mariadb
-    env: dev
 spec:
+  type: NodePort
   selector:
-    id: c0905643
     app: mariadb
-    env: dev
   ports:
     - protocol: TCP
       port: 3306
       targetPort: 3306
-  clusterIP: None

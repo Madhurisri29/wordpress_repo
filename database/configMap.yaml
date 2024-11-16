@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: database-config
+  namespace: db
+data:
+  MYSQL_DATABASE: wordpress
+  MYSQL_USER: wordpress
